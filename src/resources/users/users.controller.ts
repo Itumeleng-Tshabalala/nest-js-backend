@@ -21,7 +21,6 @@ export class UsersController {
   @Get()
   async getAll(@Query('phrase') phrase: string) {
     try {
-      console.debug('UsersController.getAll.phrase', phrase);
         const users: User[] = await this.usersService.findAll(phrase);
         return users.length > 0 ? users : { message: `No users found.` }
     } catch (error: any) {
@@ -42,8 +41,14 @@ export class UsersController {
   }
 
   @Patch(':email')
-  update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(email, updateUserDto);
+  async update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
+    try {
+      const response = await this.usersService.update(email, updateUserDto);
+      return response.acknowledged ? {user: updateUserDto, success: response.acknowledged} : `Unable to updated user ${email}, please try again later.`;
+    } catch (error) {
+      console.error("request failed", error);
+        return error;
+    }
   }
 
   @Delete(':email')

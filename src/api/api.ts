@@ -1,6 +1,7 @@
 import { Type } from "@nestjs/common";
 import { HydratedDocument, Model } from "mongoose";
 import * as _ from 'lodash';
+import { Status } from "src/shared/enum/status.enum";
 
 export class Service<T> {
 
@@ -31,7 +32,17 @@ export class Service<T> {
     async getAll() : Promise<T[]>{
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await this.model.find();
+                let sortByOptions: any = {name: null};
+                console.debug('Service.getAll.this.model', this.model.modelName)
+                switch (this.model.modelName) {
+                    case 'User':
+                        sortByOptions = {
+                            name: 1
+                        }
+                        break;
+                }
+                console.debug('Service.getAll.sortByOptions', sortByOptions)
+                const response = await this.model.find().sort(sortByOptions);
                 resolve(response);
             } catch (error: any) {
                 reject(error);
@@ -113,7 +124,7 @@ export class Service<T> {
     async removeById(id: string) {
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await this.model.updateOne({id}, {status: 'Deleted'});
+                const response = await this.model.updateOne({id}, {status: Status.DELETED});
                 resolve(response);
             } catch (error: any) {
                 reject(error);
@@ -129,7 +140,7 @@ export class Service<T> {
     async removeByEmail(email: string) {
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await this.model.updateOne({email}, {status: 'Deleted'});
+                const response = await this.model.updateOne({email}, {status: Status.DELETED});
                 resolve(response);
             } catch (error: any) {
                 reject(error);
