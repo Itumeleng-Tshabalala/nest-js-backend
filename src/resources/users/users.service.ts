@@ -3,9 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Service } from 'src/api/api';
 import { MailService } from 'src/api/mail.api';
+import { Status } from 'src/shared/enum/status.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDocument, User } from './schema/users.schema';
+import * as _ from 'lodash';
 
 @Injectable()
 export class UsersService extends Service<UserDocument> {
@@ -18,11 +20,11 @@ export class UsersService extends Service<UserDocument> {
 
   async create(createUserDto: CreateUserDto) : Promise<User>  {
     try {
-      const response: User = await this.insert(createUserDto);
-      console.error("UsersService.findAll.response", response);
-      return response;
+      const user: User = await this.insert(createUserDto);
+      console.error("UsersService.findAll.response", user);
+      return user;
     } catch (error: any) {
-      console.error("UsersService.findAll", error);
+      console.error("UsersService.findAll.error", error);
       return error;
     }
   }
@@ -31,9 +33,13 @@ export class UsersService extends Service<UserDocument> {
     try {
       if(phrase) {
         console.error("UsersService.findAll.if", phrase);
-        return await this.search(phrase);
+        const users: User[] = await this.search(phrase);
+        console.debug('UsersServices.findAll.user', users)
+        return users;
       }
-      return await this.getAll();
+      const users: User[] = await this.getAll();
+      console.debug('UsersServices.findAll.user', users)
+      return users;
     } catch (error: any) {
         console.error("UsersService.findAll", error);
         return error;
@@ -64,6 +70,17 @@ export class UsersService extends Service<UserDocument> {
 
   async update(email: string, updateUserDto: UpdateUserDto) {
     try {
+      if(updateUserDto.status) {
+        console.debug('UsersService.update.updateUserDto.status', _.upperFirst(updateUserDto.status.toLowerCase()))
+        switch (_.upperFirst(updateUserDto.status.toLowerCase())){
+          case Status.DELETED:
+            updateUserDto.status = Status.DELETED;
+            break;
+          case Status.INITIATED:
+            updateUserDto.status = Status.INITIATED;
+            break;
+        }
+      }
       const user = await this.updateByEmail(email, updateUserDto);
       console.debug('UsersService.update.user', user)
       return user;
