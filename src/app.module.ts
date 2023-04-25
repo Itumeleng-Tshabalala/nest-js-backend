@@ -9,6 +9,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import { UsersModule } from './resources/users/users.module';
 import { MailService } from './api/mail.api';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { MailService } from './api/mail.api';
       useNewUrlParser: true,
       useUnifiedTopology: true,
     }),
+    EventEmitterModule.forRoot(),
     ResourceModule,
   ],
   controllers: [AppController],

@@ -1,7 +1,7 @@
-import { Type } from "@nestjs/common";
+
 import { HydratedDocument, Model } from "mongoose";
-import * as _ from 'lodash';
 import { Status } from "src/shared/enum/status.enum";
+import * as _ from 'lodash';
 
 export class Service<T> {
 
