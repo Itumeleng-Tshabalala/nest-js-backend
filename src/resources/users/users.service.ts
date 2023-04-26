@@ -5,9 +5,9 @@ import { Service } from 'src/api/api';
 import { Status } from 'src/shared/enum/status.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserDocument, User } from './schema/users.schema';
 import * as _ from 'lodash';
 import { OnEvent } from '@nestjs/event-emitter';
+import { UserDocument, User } from './schema/users.schema';
 
 @Injectable()
 export class UsersService extends Service<UserDocument> {

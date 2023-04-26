@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { User } from './schema/users.schema';
 
 @Controller('users')
 export class UsersController {
