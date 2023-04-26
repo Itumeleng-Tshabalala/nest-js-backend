@@ -1,17 +1,20 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './schema/users.schema';
 import { UsersService } from './users.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { User } from './schema/users.schema';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService, private eventEmitter: EventEmitter2) {}
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     try {
-      return await this.usersService.create(createUserDto);
+      const user: User = await this.usersService.create(createUserDto);
+      this.eventEmitter.emit('user.created', user);
+      return user;
     } catch (error: any) {
         console.error("request failed", error);
         return error;
@@ -19,7 +22,7 @@ export class UsersController {
   }
 
   @Get()
-  async getAll(@Query('phrase') phrase: string) {
+  async getAll(@Query('phrase') phrase?: string) {
     try {
         const users: User[] = await this.usersService.findAll(phrase);
         return users.length > 0 ? users : { message: `No users found.` }

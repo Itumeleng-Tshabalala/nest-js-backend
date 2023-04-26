@@ -2,17 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Service } from 'src/api/api';
-import { MailService } from 'src/api/mail.api';
 import { Status } from 'src/shared/enum/status.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserDocument, User } from './schema/users.schema';
 import * as _ from 'lodash';
+import { OnEvent } from '@nestjs/event-emitter';
+import { UserDocument, User } from './schema/users.schema';
 
 @Injectable()
 export class UsersService extends Service<UserDocument> {
 
   constructor(
+    // private mailService: MailService,
     @InjectModel(User.name) private userModal: Model<UserDocument>
     ) {
     super(userModal)
@@ -29,7 +30,7 @@ export class UsersService extends Service<UserDocument> {
     }
   }
 
-  async findAll(phrase: string) : Promise<User[]>  {
+  async findAll(phrase?: string) : Promise<User[]> {
     try {
       if(phrase) {
         console.error("UsersService.findAll.if", phrase);
@@ -49,10 +50,10 @@ export class UsersService extends Service<UserDocument> {
   async findOneByEmail(email: string) : Promise<User> {
     try {
       const user: User = await this.getOneByEmail(email);
-      console.debug('UsersService.findAll.user', user)
+      console.debug('UsersService.findOneByEmail.user', user)
       return user;
     } catch (error: any) {
-        console.error("UsersService.findAll.error", error);
+        console.error("UsersService.findOneByEmail.error", error);
         return error;
     }
   }
@@ -60,10 +61,10 @@ export class UsersService extends Service<UserDocument> {
   async findOneById(id: string) : Promise<User> {
     try {
       const user: User = await this.getOneById(id);
-      console.debug('UsersService.findAll.user', user)
+      console.debug('UsersService.findOneById.user', user)
       return user;
     } catch (error: any) {
-        console.error("UsersService.findAll.error", error);
+        console.error("UsersService.findOneById.error", error);
         return error;
     }
   }
@@ -99,5 +100,12 @@ export class UsersService extends Service<UserDocument> {
         console.error("UsersService.remove.error", error);
         return error;
     }
+  }
+
+  @OnEvent('user.created')
+  handleUserCreatedEvent(payload: any) {
+    // handle and process "UserCreatedEvent" event
+    console.debug('UsersService.handleUserCreatedEvent - Emitted', payload);
+    // this.mailService.sendEmail();
   }
 }

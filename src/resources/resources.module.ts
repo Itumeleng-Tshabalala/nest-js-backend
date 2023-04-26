@@ -7,8 +7,8 @@ import { TripsModule } from './trips/trips.module';
 import { UserTripsModule } from './user-trips/user-trips.module';
 
 @Module({
-  imports: [UsersModule, VehicleModule, UserVehicleModule, TripsModule, UserTripsModule],
+  imports: [UsersModule, VehicleModule, UserVehicleModule, TripsModule, UserTripsModule,],
   controllers: [],
-  providers: [MailService],
+  providers: [MailService,],
 })
 export class ResourceModule {}
